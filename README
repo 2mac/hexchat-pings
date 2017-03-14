@@ -3,6 +3,16 @@ pings
 
 Captures highlighted messages in HexChat and lets you review them.
 
+Usage
+-----
+
+pings records highlighted messages for you to recall.
+
+    /pings [date] [time]
+
+shows all highlighted messages since that date and time. Date must be MM-DD,
+and time must be hh:mm[:ss].
+
 Hacking
 -------
 
