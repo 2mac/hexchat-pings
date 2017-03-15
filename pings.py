@@ -91,7 +91,7 @@ def pings(word, word_eol, userdata):
     if len(word) < 2:
         time = datetime(datetime.now().year - 1, 1, 1)
     elif word[1] == 'clear':
-        PINGS.clear()
+        del PINGS[:]
     else:
         try:
             time = convert_timestamp(word_eol[1])
