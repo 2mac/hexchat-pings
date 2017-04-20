@@ -21,7 +21,9 @@ __module_description__ = 'Highlighted message tracker'
 __module_author__ = 'David McMackins II'
 
 import hexchat
-from datetime import datetime
+from datetime import datetime, timedelta
+
+STARTING_TIME = datetime.now()
 
 class Ping:
     def __init__(self, time, user, message):
@@ -37,7 +39,7 @@ PINGS = []
 
 def convert_timestamp(stamp):
     now = datetime.now()
-    date = ['1','1']
+    date = [STARTING_TIME.year, STARTING_TIME.month]
     time = ['0', '0', '0']
     stamp = stamp.split(' ')
     if len(stamp) == 1:
@@ -52,6 +54,12 @@ def convert_timestamp(stamp):
             try:
                 for i in range(len(stamp)):
                     time[i] = stamp[i]
+
+                test = datetime(now.year, now.month, now.day, int(time[0]),
+                                int(time[1]), int(time[2]))
+                if test > now:
+                    test -= timedelta(1)
+                    date = [test.month, test.day]
             except IndexError:
                 hexchat.prnt('Time must be formatted hh:mm[:ss]')
                 raise Exception()
@@ -89,7 +97,7 @@ def convert_timestamp(stamp):
 
 def pings(word, word_eol, userdata):
     if len(word) < 2:
-        time = datetime(datetime.now().year - 1, 1, 1)
+        time = STARTING_TIME
     elif word[1] == 'clear':
         del PINGS[:]
     else:
