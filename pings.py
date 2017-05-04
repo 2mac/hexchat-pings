@@ -106,8 +106,7 @@ def pings(word, word_eol, userdata):
         except Exception:
             return hexchat.EAT_ALL
 
-    if PINGS:
-        hexchat.prnt('Pings since ' + str(time))
+    hexchat.prnt('Pings since ' + str(time))
 
     for ping in PINGS:
         diff = ping.time - time
