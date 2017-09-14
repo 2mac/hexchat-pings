@@ -37,9 +37,11 @@
 ##
 
 __module_name__ = 'pings'
-__module_version__ = '0.0'
+__module_version__ = '0.1'
 __module_description__ = 'Highlighted message tracker'
 __module_author__ = 'David McMackins II'
+
+_MAJOR_VERSION = __module_version__.split('.')[0]
 
 import hexchat
 from datetime import datetime, timedelta
@@ -47,16 +49,21 @@ from datetime import datetime, timedelta
 STARTING_TIME = datetime.now()
 
 class Ping:
-    def __init__(self, time, user, message):
+    def __init__(self, time, user, msg, msg_format):
         self.time = time
-        self.user = user
-        self.message = message
+
+        msg_format = '[{time:%m-%d %H:%M:%S}] ' + msg_format
+        self._text = msg_format.format(time=time, user=user, msg=msg)
 
     def __str__(self):
-        timestamp = '[{0:%m-%d %H:%M:%S}]'.format(self.time)
-        return ' '.join([timestamp, self.user + ':', self.message])
+        return self._text
 
-PINGS = []
+class PingData(list):
+    def __init__(self):
+        super().__init__()
+        self.version = _MAJOR_VERSION
+
+PINGS = PingData()
 
 def convert_timestamp(stamp):
     now = datetime.now()
@@ -127,7 +134,7 @@ def pings(word, word_eol, userdata):
         except Exception:
             return hexchat.EAT_ALL
 
-    hexchat.prnt('Pings since ' + str(time))
+    hexchat.prnt('Pings since {0:%Y-%m-%d %H:%M:%S}'.format(time))
 
     for ping in PINGS:
         diff = ping.time - time
@@ -136,8 +143,12 @@ def pings(word, word_eol, userdata):
 
     return hexchat.EAT_ALL
 
-def catch(word, word_eol, userdata):
-    PINGS.append(Ping(datetime.now(), word[0], word[1]))
+def catch_msg(word, word_eol, userdata):
+    PINGS.append(Ping(datetime.now(), word[0], word[1], '{user}: {msg}'))
+    return hexchat.EAT_NONE
+
+def catch_emote(word, word_eol, userdata):
+    PINGS.append(Ping(datetime.now(), word[0], word[1], '* {user} {msg}'))
     return hexchat.EAT_NONE
 
 def unload(userdata):
@@ -146,7 +157,8 @@ def unload(userdata):
 def init():
     hexchat.hook_command('pings', pings,
                          help='Usage: PINGS [date (MM-DD)] [time (hh:mm[:ss])], lists pings since time specified')
-    hexchat.hook_print('Channel Msg Hilight', catch)
+    hexchat.hook_print('Channel Msg Hilight', catch_msg)
+    hexchat.hook_print('Channel Action Hilight', catch_emote)
     hexchat.hook_unload(unload)
     hexchat.prnt('Loaded {} {}'.format(__module_name__, __module_version__))
 
