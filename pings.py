@@ -1,6 +1,6 @@
 ##
 ## pings - capture HexChat highlighted messages for review
-## Copyright (C) 2017 David McMackins II
+## Copyright (C) 2017-2018 David McMackins II
 ##
 ## Redistributions, modified or unmodified, in whole or in part, must retain
 ## applicable copyright or other legal privilege notices, these conditions, and
@@ -37,7 +37,7 @@
 ##
 
 __module_name__ = 'pings'
-__module_version__ = '0.1'
+__module_version__ = '0.1.1'
 __module_description__ = 'Highlighted message tracker'
 __module_author__ = 'David McMackins II'
 
@@ -144,7 +144,7 @@ def pings(word, word_eol, userdata):
     return hexchat.EAT_ALL
 
 def catch_msg(word, word_eol, userdata):
-    PINGS.append(Ping(datetime.now(), word[0], word[1], '{user}: {msg}'))
+    PINGS.append(Ping(datetime.now(), word[0], word[1], '<{user}> {msg}'))
     return hexchat.EAT_NONE
 
 def catch_emote(word, word_eol, userdata):
